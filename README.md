@@ -3,14 +3,18 @@
 # Project 4 Private-Blockchain-Notary-Service
 It's a blockchain project that will allow you how to create a Private Blockchain Notary Service using express.js
 =======
-##Following libraries are required for this project
+Following libraries are required for this project
 
-### __bitcoinjs-lib__ A javascript Bitcoin library for node.js
+# __bitcoinjs-lib__ 
+A javascript Bitcoin library for node.js
 
-### __bitcoinjs-message__  to verify address, signature and message 
-### __crypto-js__ JavaScript library of crypto standards like __SHA256__ or __AES__ .
-###__level__ it is used for database
-
+# __bitcoinjs-message__  
+To verify address, signature and message 
+#__crypto-js__ 
+JavaScript library of crypto standards like __SHA256__ or __AES__ .
+# __level__ 
+it is used for database
+=======
 
 
 # Project #2. Private Blockchain
