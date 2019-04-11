@@ -71,12 +71,8 @@ class LevelSandbox {
     return new Promise((resolve, reject) => {
       db.createReadStream()
         .on("data", function(data) {
-          //  console.log("data===",data);
-          //console.log("converted data==",JSON.parse(data.value));
-
-          var result = JSON.parse(data.value).hash.localeCompare(hash);
-          //   console.log("result==", result);
-          if (JSON.parse(data.value).hash.localeCompare) {
+          
+          if (JSON.parse(data.value).hash === hash) {
             block = data;
             console.log("block getBlockByHash in===", block);
           }
@@ -98,25 +94,20 @@ class LevelSandbox {
         .on("data", function(data) {
           //  console.log("data===", data);
           if (data.key != 0) {
-            //console.log("JSON.parse(data.value)===\n", JSON.parse(data.value));
-
+            
             if (JSON.parse(data.value).body.constructor === Object) {
-            //  console.log("its an object");
               let address = JSON.parse(data.value).body.address;
-              //let compareResult = address.localeCompare(walletAddress);
-            //  console.log("compareResult==", compareResult);
-              if (address.localeCompare(walletAddress)) {
+              if (address === walletAddress) {
                 match.push(data.value);
               }
             }
-           
           }
         })
         .on("err", function(err) {
           reject(err);
         })
         .on("close", function(close) {
-          console.log("match.count==",match.length);
+         // console.log("match.count==", match.length);
           resolve(match);
         });
     });

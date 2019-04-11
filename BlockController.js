@@ -46,7 +46,8 @@ class BlockController {
     this.app.get("/stars/hash:hash", (req, res) => {
       try {
         let blockHash = req.params.hash;
-
+       blockHash = blockHash.replace(/^:/, "");
+        console.log("\nblockHash:======", blockHash);
         if (blockHash == null) {
           return res.status(201).json({
             message: "Invalid Block",
@@ -129,7 +130,7 @@ class BlockController {
     this.app.get("/stars/address:address", (req, res) => {
       try {
         let blockWalletAddress = req.params.address;
-
+          blockWalletAddress = blockWalletAddress.replace(/^:/, "");
         if (blockWalletAddress == null || blockWalletAddress == undefined) {
           return res.status(201).json({
             message: "Invalid Wallet address",
@@ -333,23 +334,27 @@ Implement getNewlyAddedBlock method to get the block height and then pass the he
             let blockJSON = JSON.parse(block);
 
             let body = blockJSON.body;
-            let star = JSON.parse(body.star);
-            body.star = star;
-            blockJSON.body = body;
+            try {
+              let star = JSON.parse(body.star);
+              body.star = star;
+              blockJSON.body = body;
 
-            let story = star.story;
-            //console.log("story",story)
-            blockJSON.body = body;
+              let story = star.story;
+              //console.log("story",story)
+              blockJSON.body = body;
 
-            // below line convert hex to utf8 string human readable with the help of Buffer
-            blockJSON.body.star.story = Buffer.from(story, "utf8").toString(
-              "hex"
-            );
-            //  console.log("blockJSON===\n\n", blockJSON);
-            res.status(200).json({
-              error: 0,
-              body: blockJSON
-            });
+              // below line convert hex to utf8 string human readable with the help of Buffer
+              blockJSON.body.star.story = Buffer.from(story, "utf8").toString(
+                "hex"
+              );
+              //  console.log("blockJSON===\n\n", blockJSON);
+              res.status(200).json(blockJSON);
+            } catch (error) {
+              res.status(200).json({
+                error: 0,
+                body: "Something went wrong"
+              });
+            }
           });
         });
       } catch (error) {
