@@ -18,7 +18,7 @@ class MempoolController {
   }
 
   /**
-   * Implement a POST Endpoint to validation request, url: "/api/requestValidation"
+   * Implement a POST Endpoint to validation request, url: "/requestValidation"
    */
 
   requestValidation() {
@@ -67,7 +67,7 @@ class MempoolController {
   }
 
   /**
-   * Implement a POST Endpoint to validate signature, url: "/api/message-signature/validate"
+   * Implement a POST Endpoint to validate signature, url: "/message-signature/validate"
    */
 
   validateSignature() {
@@ -113,7 +113,7 @@ class MempoolController {
     });
   }
 
-  // To store the star details in the chain. URL :/api/block
+  // To store the star details in the chain. URL :/block
 
   storeStarData() {
     this.app.post("/block", (request, res) => {
