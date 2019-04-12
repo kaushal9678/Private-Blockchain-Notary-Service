@@ -89,7 +89,7 @@ class Blockchain {
 
   async getBlock(blockHeight) {
     // return object as a single string
-   
+
     //return JSON.parse(await this.bd.getLevelDBData(blockHeight));
     return await this.bd.getLevelDBData(blockHeight);
   }
@@ -99,11 +99,11 @@ class Blockchain {
   async validateBlock(blockHeight) {
     // get block object
     let block = await this.getBlock(blockHeight);
-  //  console.log("current blockHeight" + blockHeight);
+    //  console.log("current blockHeight" + blockHeight);
 
     // get block hash
     let blockHash = block.hash;
-   // console.log("blockHash - " + blockHash);
+    // console.log("blockHash - " + blockHash);
     // remove block hash to test block integrity
     block.hash = "";
     // generate block hash
@@ -131,11 +131,11 @@ class Blockchain {
     let previousHash = "";
     let isBlockValid = false;
     const height = await this.bd.getBlocksCount();
- //   console.log("blockHeight - " + height);
+    //   console.log("blockHeight - " + height);
     for (var i = 0; i < height; i++) {
       this.getBlock(i).then(block => {
         // validate block
-     //   console.log("getblockHeight - " + block.height);
+        //   console.log("getblockHeight - " + block.height);
         isBlockValid = this.validateBlock(block.height);
         if (!isBlockValid) {
           errorLog.push(i);

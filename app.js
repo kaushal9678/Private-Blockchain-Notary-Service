@@ -30,6 +30,14 @@ class BlockAPI {
    * Initialization of the middleware modules
    */
   initExpressMiddleWare() {
+    this.app.use(
+      bodyParser.raw({
+        inflate: true,
+        limit: "100kb",
+        type: "application/json;text/xml;"
+      })
+    );
+    // this.app.use(bodyParser.raw());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
   }

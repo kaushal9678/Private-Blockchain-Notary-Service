@@ -5,6 +5,10 @@ const LevelSandbox = require("./LevelSandbox.js");
 const bitcoin = require("bitcoinjs-lib");
 const bitcoinMessage = require("bitcoinjs-message");
 const hextoascii = require("hex2ascii");
+
+const bodyParser = require("body-parser");
+//const express = require("express");
+var express = require("./node_modules/express");
 // Http library
 const http = require("http");
 
@@ -46,7 +50,7 @@ class BlockController {
     this.app.get("/stars/hash:hash", (req, res) => {
       try {
         let blockHash = req.params.hash;
-       blockHash = blockHash.replace(/^:/, "");
+        blockHash = blockHash.replace(/^:/, "");
         console.log("\nblockHash:======", blockHash);
         if (blockHash == null) {
           return res.status(201).json({
@@ -67,15 +71,9 @@ class BlockController {
               // check if block exist then decode star data and return JSON
               let blockResult = JSON.parse(block.value);
               if (blockResult.height != 0) {
-                let body = blockResult.body;
-                let star = JSON.parse(body.star);
-                body.star = star;
-                let story = star.story;
-                blockResult.body = body;
-
                 // below line convert hex to utf8 string human readable with the help of Buffer
                 blockResult.body.star.story = Buffer.from(
-                  story,
+                  blockResult.body.star.story,
                   "utf8"
                 ).toString("hex");
 
@@ -130,7 +128,7 @@ class BlockController {
     this.app.get("/stars/address:address", (req, res) => {
       try {
         let blockWalletAddress = req.params.address;
-          blockWalletAddress = blockWalletAddress.replace(/^:/, "");
+        blockWalletAddress = blockWalletAddress.replace(/^:/, "");
         if (blockWalletAddress == null || blockWalletAddress == undefined) {
           return res.status(201).json({
             message: "Invalid Wallet address",
@@ -150,14 +148,9 @@ class BlockController {
             for (let i = 0; i < blocks.length; i++) {
               let addValue = JSON.parse(blocks[i]);
 
-              let body = addValue.body;
-              let star = JSON.parse(body.star);
-              body.star = star;
-              addValue.body = body;
-
               // below line convert hex to utf8 string human readable with the help of Buffer
               addValue.body.star.story = Buffer.from(
-                star.story,
+                addValue.body.star.story,
                 "utf8"
               ).toString("hex");
 
@@ -214,17 +207,11 @@ class BlockController {
 
           let blockResult = JSON.parse(block);
           if (blockResult.height != 0) {
-            let body = blockResult.body;
-            let star = JSON.parse(body.star);
-            body.star = star;
-            let story = star.story;
-            //console.log("story",story)
-            blockResult.body = body;
-
             // below line convert hex to utf8 string human readable with the help of Buffer
-            blockResult.body.star.story = Buffer.from(story, "utf8").toString(
-              "hex"
-            );
+            blockResult.body.star.story = Buffer.from(
+              blockResult.body.star.story,
+              "utf8"
+            ).toString("hex");
 
             // below line convert string to hex string with the help of Buffer and code utf8 for string to hex
             blockResult.body.star.storyDecoded = Buffer.from(
@@ -311,14 +298,18 @@ Implement getNewlyAddedBlock method to get the block height and then pass the he
   postNewBlock() {
     this.app.post("/block", (req, res) => {
       try {
-        //  console.log("request in block controller==", req.body);
-        // Add your code here
         let blockData = req.body;
         if (blockData === undefined && blockData === null) {
-          return "No Block data added";
+          return res.status(404).json({
+            message: "Please provide body.",
+            error: 1
+          });
         }
         if (blockData.length === 0) {
-          return "Block Data enter is empty";
+          return res.status(404).json({
+            message: "Body data is empty.",
+            error: 1
+          });
         }
         //console.log("went outside if condition===\n", blockData);
         this.addBlockToDatabase(blockData).then(response => {
@@ -329,27 +320,17 @@ Implement getNewlyAddedBlock method to get the block height and then pass the he
                 error: 1
               });
             }
-            //    console.log("block==\n", JSON.parse(block));
-            //console.log(JSON.parse(block.body));
             let blockJSON = JSON.parse(block);
-
-            let body = blockJSON.body;
             try {
-              let star = JSON.parse(body.star);
-              body.star = star;
-              blockJSON.body = body;
-
-              let story = star.story;
-              //console.log("story",story)
-              blockJSON.body = body;
-
               // below line convert hex to utf8 string human readable with the help of Buffer
-              blockJSON.body.star.story = Buffer.from(story, "utf8").toString(
-                "hex"
-              );
+              blockJSON.body.star.story = Buffer.from(
+                blockJSON.body.star.story,
+                "utf8"
+              ).toString("hex");
               //  console.log("blockJSON===\n\n", blockJSON);
               res.status(200).json(blockJSON);
             } catch (error) {
+              console.log("error==", error);
               res.status(200).json({
                 error: 0,
                 body: "Something went wrong"

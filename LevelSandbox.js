@@ -24,7 +24,7 @@ class LevelSandbox {
             reject(error);
           }
         }
-        console.log("value of key==", value);
+       // console.log("value of key==", value);
 
         resolve(value);
       });
@@ -34,7 +34,7 @@ class LevelSandbox {
   // Add data to levelDB with key and value (Promise)
   addLevelDBData(key, value) {
     // let self = this;
-    console.log(`\n\n\n addLevelDBData key=${key}===\n\n value==${value}`);
+   // console.log(`\n\n\n addLevelDBData key=${key}===\n\n value==${value}`);
     return new Promise((resolve, reject) => {
       db.put(key, value, error => {
         if (error) {
