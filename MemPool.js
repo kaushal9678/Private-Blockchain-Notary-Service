@@ -23,7 +23,7 @@ class Mempool {
   }
 
   addRequestValidation(request) {
-    // console.log(request)
+    console.log("called addRequestValidation= ", request);
     let self = this;
     const TimeoutRequestWindowTime = 5 * 60 * 1000; //5 min window time
     //check if the request is already present in the mempool
@@ -31,7 +31,8 @@ class Mempool {
     // console.log(index)//<- value will be undefine
 
     let mempoolIndex = this.validRequestLookup[request.walletAddress]; // most likely output will be undefined for first value
-
+    console.log("\n\n-----------------------------\n\n");
+    console.log("mempoolIndex===", mempoolIndex);
     if (mempoolIndex != null) {
       // this will be false for the first value or empty object(not considering genesis block),means if we have some value in the mempool we will execute this code
       return "please submit the star data before the request expires. A valid request has already made and signature is verified, ";
@@ -51,9 +52,12 @@ class Mempool {
       //adjusting index value
       index = this.mempool.push(request) - 1; // now we are adding value to mempool, this will make index value = 0
 
+      console.log("\n\n-----------------------------\n\n");
+      console.log("this.mempool===", this.mempool);
       //For faster Lookup of the request
       this.lookup[request.walletAddress] = index; //lookup = {request.walletAddress(add details) : 0} this will be the value of lookup table
-      // console.log(this.lookup)  //this.lookup value is { '176XX1KmRAYC4V9XxzUK3Zk6ALGiCegqMv': 0 }
+      console.log("\n\n-----------------------\n\n");
+      console.log("this.lookup===", this.lookup); //this.lookup value is { '176XX1KmRAYC4V9XxzUK3Zk6ALGiCegqMv': 0 }
       //timeout of 5 minutes
       //Timeout Request is an array, we are adding wallet address as a parameter in our array.
       //This will remove our entry after 5 minutes
@@ -64,6 +68,10 @@ class Mempool {
 
       return request;
     } else {
+      console.log("\n\n-------------------------\n\n")
+      console.log(
+        "updating the already created request in the mempool with new validation window."
+      );
       //updating the already created request in the mempool with new validation window.
       let reqObj = this.mempool[index]; // means my wallet address value will to give to reqObj
       reqObj.requestTimeStamp = this.mempool[index].requestTimeStamp;
@@ -76,7 +84,7 @@ class Mempool {
       // console.log("5.2 reqObj tLeft---->"+ timeLeft)   // kartik
 
       reqObj.validationWindow = timeLeft;
-      console.log(reqObj);
+      console.log("\n\nreqObj------------===", reqObj);
       return reqObj;
     }
   }
@@ -96,8 +104,8 @@ class Mempool {
     const TimeoutMempoolValidWindowTime = 5 * 60 * 1000; // time is set for 30 mins
     //check if the request already present in the mempool
     let index = this.lookup[address];
-    console.log("lookup array==",this.lookup);
-    console.log("index===",index);
+    console.log("lookup array==", this.lookup);
+    console.log("index===", index);
 
     if (index == null) {
       return "Please submit a temporal validation request";
@@ -160,7 +168,7 @@ class Mempool {
 
   removeValidRequest(address) {
     //cleaning up the mempool, lookup table and timeoutRequest array
-
+    console.log("\n removeValidRequest address===", address);
     this.removeValidationRequest(address);
     let index = this.validRequestLookup[address];
     delete this.validRequestLookup[address];
@@ -170,7 +178,10 @@ class Mempool {
   }
 
   verifyAddressRequest(address) {
-    let index = this.validRequestLookup[address];
+    console.log(" \nverifyAddressRequest address=====", address);
+    console.log("\n\nthis.lookup===\n", this.lookup);
+    let index = this.lookup[address]; //this.validRequestLookup[address]
+    console.log("index of address=", index);
     if (index == null) {
       return false;
     } else {

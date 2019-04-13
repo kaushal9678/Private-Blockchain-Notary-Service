@@ -4,11 +4,11 @@ const BlockChainClass = require("./BlockChain.js");
 const LevelSandbox = require("./LevelSandbox.js");
 const bitcoin = require("bitcoinjs-lib");
 const bitcoinMessage = require("bitcoinjs-message");
+const MempoolClass = require("./MemPool.js");
 const hextoascii = require("hex2ascii");
 
 const bodyParser = require("body-parser");
 //const express = require("express");
-var express = require("./node_modules/express");
 // Http library
 const http = require("http");
 
@@ -25,13 +25,14 @@ class BlockController {
   constructor(app) {
     this.app = app;
     this.blocks = [];
+    this.mempool = new MempoolClass.Mempool();
     this.blockchain = new BlockChainClass.Blockchain();
     this.bd = new LevelSandbox.LevelSandbox();
     this.getBlockByHeight();
     this.getBlockWalletAddress();
     this.getBlockByHash();
     this.getBlockByIndex();
-    this.postNewBlock();
+    // this.postNewBlock();
   }
 
   /**
@@ -261,90 +262,6 @@ class BlockController {
         res.json({ error: 0, body: JSON.parse(block) });
         // res.json({body:block});
       });
-    });
-  }
-
-  /**
-   *Implement addBlockToDatabase function asynchronously  to save block into database
-   */
-  async addBlockToDatabase(block) {
-    try {
-      // console.log("\n\n\naddBlockToDatabase body==", block);
-      return await this.blockchain.addBlock(new BlockClass.Block(block));
-    } catch (error) {
-      console.log("error in adding block");
-      return "Internal error to add block";
-    }
-  }
-
-  /**
-Implement getNewlyAddedBlock method to get the block height and then pass the height as key to get the details of that key block.
-
- */
-  async getNewlyAddedBlock() {
-    const height = parseInt(await this.blockchain.getBlockHeight());
-    //  if (await this.bd.getLevelDBData(key))
-    try {
-      return await this.bd.getLevelDBData(height); // check key in database and return response
-    } catch (error) {
-      console.log("defined key not found");
-    }
-  }
-
-  /**
-   * Implement a POST Endpoint to add a new Block, url: "/api/block"
-   */
-
-  postNewBlock() {
-    this.app.post("/block", (req, res) => {
-      try {
-        let blockData = req.body;
-        if (blockData === undefined && blockData === null) {
-          return res.status(404).json({
-            message: "Please provide body.",
-            error: 1
-          });
-        }
-        if (blockData.length === 0) {
-          return res.status(404).json({
-            message: "Body data is empty.",
-            error: 1
-          });
-        }
-        //console.log("went outside if condition===\n", blockData);
-        this.addBlockToDatabase(blockData).then(response => {
-          this.getNewlyAddedBlock().then(block => {
-            if (!block) {
-              res.status(404).json({
-                message: "The block with the giveId is not found",
-                error: 1
-              });
-            }
-            let blockJSON = JSON.parse(block);
-            try {
-              // below line convert hex to utf8 string human readable with the help of Buffer
-              blockJSON.body.star.story = Buffer.from(
-                blockJSON.body.star.story,
-                "utf8"
-              ).toString("hex");
-              //  console.log("blockJSON===\n\n", blockJSON);
-              res.status(200).json(blockJSON);
-            } catch (error) {
-              console.log("error==", error);
-              res.status(200).json({
-                error: 0,
-                body: "Something went wrong"
-              });
-            }
-          });
-        });
-      } catch (error) {
-        console.log("error==", error);
-        return res.status(200).json({
-          error: 0,
-          message: "Request processing error"
-        });
-      }
     });
   }
 
